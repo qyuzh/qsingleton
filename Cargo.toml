@@ -1,0 +1,20 @@
+[package]
+name = "qsingleton"
+version = "0.1.0"
+edition = "2021"
+authors = ["qyuzh <qyuzhang22@gmail.com>"]
+categories = ["rust-patterns"]
+keywords = ["singleton"]
+description = "Helper macros to generate singleton definitions"
+license = "MIT"
+documentation = "https://docs.rs/qsingleton"
+rust-version = "1.70"
+repository = "https://github.com/qyuzh/qsingleton"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2.0", features = ["full"] }
+quote = "1.0"
+proc-macro2 = "1.0"
