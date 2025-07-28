@@ -62,7 +62,7 @@ pub fn singleton(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let impl_block = if args.use_arc {
         quote! {
-            static #instance_name: ::std::sync::OnceLock<std::sync::Arc<#name>> = ::std::sync::OnceLock::new();
+            static #instance_name: ::std::sync::OnceLock<::std::sync::Arc<#name>> = ::std::sync::OnceLock::new();
             impl #name {
                 /// Get the global singleton instance as Arc
                 pub fn global() -> &'static ::std::sync::Arc<Self> {
