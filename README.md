@@ -6,6 +6,7 @@ A Rust procedural macro library for implementing thread-safe singleton patterns 
 
 - **Thread-safe**: Uses `std::sync::OnceLock` for safe concurrent access
 - **Flexible return types**: Choose between `&'static Self` or `Arc<Self>`
+- **Configurable sleep mechanism**: Automatically sleeps and retries when singleton is not yet initialized
 - **Simple API**: Just two methods - `init()` and `global()`
 - **Zero runtime overhead**: All safety guarantees are compile-time
 
@@ -72,6 +73,24 @@ fn main() {
 }
 ```
 
+### Custom Sleep Duration
+
+```rust
+use qsinglton::singleton;
+
+// Custom sleep duration of 1000ms
+#[singleton(sleep_ms = 1000)]
+struct Settings {
+    timeout: u64,
+}
+
+// Arc with custom sleep duration of 300ms
+#[singleton(arc, sleep_ms = 300)]
+struct Cache {
+    data: Vec<String>,
+}
+```
+
 ## API
 
 ### `init(instance: Self)`
@@ -80,7 +99,16 @@ Initializes the singleton with the provided instance. Panics if called more than
 
 ### `global() -> &'static Self` or `global() -> &'static Arc<Self>`
 
-Returns a reference to the global singleton instance. Panics if called before `init()`.
+Returns a reference to the global singleton instance. If the singleton is not yet initialized, this method will sleep for the configured duration (default 500ms) and retry up to 20 times before panicking.
+
+This sleep mechanism is particularly useful in multi-threaded scenarios where one thread is initializing the singleton while another thread attempts to access it.
+
+## Sleep Configuration
+
+- **Default behavior**: `#[singleton]` - 500ms sleep intervals
+- **Custom sleep**: `#[singleton(sleep_ms = 1000)]` - Custom duration in milliseconds
+- **Arc with custom sleep**: `#[singleton(arc, sleep_ms = 300)]` - Arc mode with custom sleep
+- **Maximum retries**: 20 attempts (configurable in generated code)
 
 ## Thread Safety
 
@@ -89,6 +117,7 @@ All generated code is thread-safe and uses `std::sync::OnceLock` internally to e
 - Only one initialization can succeed
 - Multiple threads can safely access the singleton
 - No data races or undefined behavior
+- Graceful handling of initialization delays through configurable sleep mechanism
 
 ## License
 
